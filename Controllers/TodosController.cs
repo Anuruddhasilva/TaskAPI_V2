@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Threading.Tasks;
-using TaskAPI.Models;
+using TaskAPI.Services;
 
 namespace TaskAPI.Controllers
 {
@@ -13,55 +9,22 @@ namespace TaskAPI.Controllers
     [ApiController]
     public class TodosController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Todos() 
+        private TodoService _TodoService;
+
+        public TodosController()
         {
-            var result = GetAllTodos();
-            return Ok(result);
+            _TodoService = new TodoService();
         }
 
-        private List<Todo> GetAllTodos()
+        [HttpGet]
+        public IActionResult Todos(int? ID)
         {
-            var todos = new List<Todo>();
+            var result = _TodoService.GetAllTodos();
 
-            var todo = new Todo()
-            {
-                Id = 1,
-                Titel = "School",
-                Description = "School trninng",
-                createDate = DateTime.Now,
-                DueDate = DateTime.Now.AddDays(5),
-                Status = TodoStatus.Inprogess
-            };
+            if (ID is null) return Ok(result);
+            else result = result.Where(t => t.Id == ID).ToList(); return Ok(result);
 
-            todos.Add(todo);
-
-            var todo1 = new Todo()
-            {
-                Id = 1,
-                Titel = "School",
-                Description = "School trninng",
-                createDate = DateTime.Now,
-                DueDate = DateTime.Now.AddDays(5),
-                Status = TodoStatus.Completed
-            };
-
-            todos.Add(todo1);
-
-
-            var todo2 = new Todo()
-            {
-                Id = 1,
-                Titel = "School",
-                Description = "School trninng",
-                createDate = DateTime.Now,
-                DueDate = DateTime.Now.AddDays(5),
-                Status = TodoStatus.New
-            };
-
-            todos.Add(todo2);
-
-            return todos;
+            return Ok(result);
         }
     }
 }
